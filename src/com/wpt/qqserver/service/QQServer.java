@@ -12,6 +12,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @projectName: QQServer
@@ -24,6 +26,30 @@ import java.net.Socket;
  */
 public class QQServer {
     private ServerSocket ss = null;
+    //创建集合，存放多个用户，如果登录认为合法的
+    private static ConcurrentHashMap<String, User> validUsers = new ConcurrentHashMap<>();
+
+    static {//在静态代码块，初始化users
+        validUsers.put("100", new User("100", "123456"));
+        validUsers.put("200", new User("200", "123456"));
+        validUsers.put("300", new User("300", "123456"));
+        validUsers.put("至尊宝", new User("至尊宝", "123456"));
+        validUsers.put("紫霞仙子", new User("紫霞仙子", "123456"));
+        validUsers.put("奔波霸", new User("奔波霸", "123456"));
+
+    }
+
+    //验证用户是否有效的方法
+    private boolean checkUser(String userID, String passwd) {
+        User user = validUsers.get(userID);
+        if (user == null) {//说明userID没有存在validUser中
+            return false;
+        }
+        if (!(user.getPasswd().equals(passwd))) {
+            return false;
+        }
+        return true;
+    }
 
     public QQServer() {
         try {
@@ -40,7 +66,7 @@ public class QQServer {
                 //构建Message对象，准备回复客户端
                 Message message = new Message();
 
-                if (user.getUserID().equals("100") && user.getPasswd().equals("123456")) {
+                if (checkUser(user.getUserID(),user.getPasswd())) {
                     message.setMesType(MessageType.MESSAGE_LOGIN_SUCCEED);
                     //将message对象回复给客户端
                     oos.writeObject(message);
@@ -51,6 +77,7 @@ public class QQServer {
                     //使用集合统一管理集合
                     ManageClientThreads.addClientThread(user.getUserID(), serverConnectClientThread);
                 } else {
+                    System.out.println("用户" + user.getUserID() + "登录失败");
                     message.setMesType(MessageType.MESSAGE_LOGIN_FAIL);
                     oos.writeObject(message);
                     //关闭socket
