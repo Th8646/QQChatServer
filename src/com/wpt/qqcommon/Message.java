@@ -23,6 +23,10 @@ public class Message implements Serializable {
     private String sendTime;    //发送时间
     private String mesType;// 在接口中定义消息类型
 
+    public Message() {
+
+    }
+
     public String getMesType() {
         return mesType;
     }
