@@ -4,9 +4,11 @@ package com.wpt.qqserver.service;/**
  */
 
 import com.wpt.qqcommon.Message;
+import com.wpt.qqcommon.MessageType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
@@ -34,6 +36,24 @@ public class ServerConnectClientThread extends Thread {
             try {
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 Message message = (Message) ois.readObject();
+                //根据Message的类型做相应的业务处理
+                if (message.getMesType().equals(MessageType.MESSAGE_GET_ONLINE_FRIEND)){
+                    //客户端在线用户列表
+
+                    System.out.println(message.getSender()+"索要在线用户列表");
+                    String onlineUser = ManageClientThreads.getOnlineUser();
+                    //返回message对象
+                    Message message2 = new Message();
+                    message2.setMesType(MessageType.MESSAGE_RET_ONLINE_FRIEND);
+                    message2.setContent(onlineUser);
+                    message2.setGetter(message.getSender());
+                    //返回客户端
+                    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                    oos.writeObject(message2);
+
+                }else {
+                    System.out.println("其他类型逻辑，带完善");
+                }
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }

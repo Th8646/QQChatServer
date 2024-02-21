@@ -4,6 +4,7 @@ package com.wpt.qqserver.service;/**
  */
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * @projectName: QQServer
@@ -24,5 +25,17 @@ public class ManageClientThreads {
 
     public static ServerConnectClientThread getClientThread(String userID) {
         return hm.get(userID);
+    }
+
+    //返回在线用户列表
+    public static String getOnlineUser() {
+        //集合遍历，遍历hashmap的key
+        Iterator<String> iterator = hm.keySet().iterator();
+        String onlineUserList = "";
+        while (iterator.hasNext()) {
+            onlineUserList += iterator.next().toString() + " ";
+
+        }
+        return onlineUserList;
     }
 }
