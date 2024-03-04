@@ -23,6 +23,10 @@ public class ManageClientThreads {
         hm.put(userID, serverConnectClientThread);
     }
 
+    public static HashMap<String, ServerConnectClientThread> getHm() {
+        return hm;
+    }
+
     public static ServerConnectClientThread getClientThread(String userID) {
         return hm.get(userID);
     }
@@ -37,5 +41,10 @@ public class ManageClientThreads {
 
         }
         return onlineUserList;
+    }
+
+    //从集合中删除某个线程对象
+    public static void removeServerconnectClientThread(String userId) {
+        hm.remove(userId);
     }
 }
